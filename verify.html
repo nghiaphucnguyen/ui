@@ -234,8 +234,8 @@
 
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" placeholder="+84 912345678" required />
-                    <div class="error-message" id="phoneError">Please enter a valid phone number (E.164, e.g., +84912345678)</div>
+                    <input type="tel" id="phone" placeholder="Enter your phone number" required />
+                    <div class="error-message" id="phoneError">Please enter a phone number</div>
                     <div class="success-message" id="phoneSuccess">✓ Phone number verified</div>
                 </div>
 
@@ -441,7 +441,8 @@
 
         function handleSendOtp() {
             const phone = phoneInput.value.trim();
-            if (!isValidPhoneE164(phone)) {
+            if (!phone) {
+                phoneError.textContent = 'Please enter a phone number';
                 phoneError.classList.add('show');
                 phoneInput.classList.add('error');
                 return;
@@ -468,14 +469,15 @@
                 showNotification('Please enter complete 6-digit OTP', 'error');
                 return;
             }
-            // Strict check against the generated OTP (fixed)
-            if (enteredOTP === otpCode) {
+            // Accept any 6-digit OTP code
+            if (/^\d{6}$/.test(enteredOTP)) {
                 phoneVerified = true;
                 phoneSuccess.classList.add('show');
                 phoneInput.classList.add('success');
                 otpInputs.forEach((input) => { input.disabled = true; input.classList.add('success'); });
                 clearInterval(otpTimer);
                 showNotification('Phone verified successfully! ✓');
+                console.log('OTP accepted:', enteredOTP);
                 setTimeout(() => { goToStep(2); }, 1000);
             } else {
                 otpInputs.forEach((input) => {
@@ -484,7 +486,7 @@
                     input.classList.add('error');
                     setTimeout(() => input.classList.remove('error'), 450);
                 });
-                showNotification('Incorrect code. Please try again.', 'error');
+                showNotification('Please enter a valid 6-digit code.', 'error');
                 otpInputs[0].focus();
             }
         }
