@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eKYC & Verification Features - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 36px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #000;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .demo-btn {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-btn.secondary {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        .demo-btn.secondary:hover {
+            background: #000;
+            color: white;
+        }
+
+        .status-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .status-value.active {
+            color: #000;
+        }
+
+        .status-value.inactive {
+            color: #666;
+        }
+
+        .status-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .clear-btn {
+            padding: 10px 20px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 eKYC & User Verification System</h1>
+
+        <!-- Status Panel -->
+        <div class="status-panel">
+            <h2 style="color: #000; margin-bottom: 10px;">Current System Status</h2>
+            <p style="color: #666; margin-bottom: 20px;">Real-time verification status and session information</p>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-value" id="loginStatus">-</div>
+                    <div class="status-label">Login Status</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="verificationStatus">-</div>
+                    <div class="status-label">Verification Status</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="rememberStatus">-</div>
+                    <div class="status-label">Remember Me</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="sessionDays">-</div>
+                    <div class="status-label">Session Valid For</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="clear-btn" onclick="clearAllData()">Clear All Data</button>
+                <button class="clear-btn" style="background: #888;" onclick="clearRememberMe()">Clear Remember Me</button>
+                <button class="clear-btn" style="background: #333;" onclick="location.reload()">Refresh Status</button>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="feature-grid">
+            <!-- Phone OTP -->
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Phone OTP Verification</div>
+                <div class="feature-desc">
+                    Secure phone number verification with real-time OTP code validation.
+                </div>
+                <ul class="feature-list">
+                    <li>Auto-formatted phone input</li>
+                    <li>6-digit OTP code system</li>
+                    <li>60-second resend timer</li>
+                    <li>Auto-paste OTP support</li>
+                    <li>Real-time validation</li>
+                    <li>Visual feedback animations</li>
+                </ul>
+                <button class="demo-btn" onclick="window.location.href='verify.html'">Try Phone OTP</button>
+            </div>
+
+            <!-- Document Upload -->
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <div class="feature-title">eKYC Document Upload</div>
+                <div class="feature-desc">
+                    Upload government-issued IDs with drag-and-drop support.
+                </div>
+                <ul class="feature-list">
+                    <li>Multiple document types</li>
+                    <li>Drag & drop upload</li>
+                    <li>File validation (size & type)</li>
+                    <li>Visual preview system</li>
+                    <li>PDF & image support</li>
+                    <li>Instant feedback</li>
+                </ul>
+                <button class="demo-btn" onclick="testDocUpload()">Test Document Upload</button>
+            </div>
+
+            <!-- Selfie Verification -->
+            <div class="feature-card">
+                <div class="feature-icon">🤳</div>
+                <div class="feature-title">Live Selfie Verification</div>
+                <div class="feature-desc">
+                    Webcam-based selfie capture for identity confirmation.
+                </div>
+                <ul class="feature-list">
+                    <li>Live camera access</li>
+                    <li>Photo capture & preview</li>
+                    <li>Retake option</li>
+                    <li>Face matching simulation</li>
+                    <li>Privacy-focused</li>
+                    <li>Mobile compatible</li>
+                </ul>
+                <button class="demo-btn" onclick="testSelfie()">Test Selfie Camera</button>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <div class="feature-title">Smart Remember Me</div>
+                <div class="feature-desc">
+                    Enhanced "Remember Me" with expiration tracking and security.
+                </div>
+                <ul class="feature-list">
+                    <li>30-day auto-login</li>
+                    <li>Expiration countdown</li>
+                    <li>Secure local storage</li>
+                    <li>Session management</li>
+                    <li>Auto-fill credentials</li>
+                    <li>Visual expiry indicator</li>
+                </ul>
+                <button class="demo-btn" onclick="testRememberMe()">Test Remember Me</button>
+            </div>
+
+            <!-- Progress Tracking -->
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Multi-Step Progress</div>
+                <div class="feature-desc">
+                    Visual progress tracking through verification steps.
+                </div>
+                <ul class="feature-list">
+                    <li>4-step verification flow</li>
+                    <li>Animated progress bar</li>
+                    <li>Step completion markers</li>
+                    <li>Back/forward navigation</li>
+                    <li>State persistence</li>
+                    <li>Smooth transitions</li>
+                </ul>
+                <button class="demo-btn" onclick="window.location.href='verify.html'">View Progress Flow</button>
+            </div>
+
+            <!-- Complete Flow -->
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Full Verification Flow</div>
+                <div class="feature-desc">
+                    Experience the complete eKYC verification process.
+                </div>
+                <ul class="feature-list">
+                    <li>Phone → Document → Selfie</li>
+                    <li>Persistent verification status</li>
+                    <li>Auto-redirect after verify</li>
+                    <li>Success animations</li>
+                    <li>Error handling</li>
+                    <li>Notification system</li>
+                </ul>
+                <button class="demo-btn" onclick="startFullFlow()">Start Full Flow</button>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="status-panel">
+            <h2 style="color: #000; margin-bottom: 20px;">🔗 Quick Navigation</h2>
+            <div class="action-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <button class="demo-btn" onclick="window.location.href='index.html'">🏠 Home</button>
+                <button class="demo-btn secondary" onclick="window.location.href='login.html'">🔐 Login</button>
+                <button class="demo-btn secondary" onclick="window.location.href='verify.html'">✓ Verification</button>
+                <button class="demo-btn secondary" onclick="window.location.href='property.html'">🏘️ Property</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update status on load
+        window.addEventListener('load', updateStatus);
+
+        function updateStatus() {
+            // Check login status
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const loginStatus = document.getElementById('loginStatus');
+            loginStatus.textContent = isLoggedIn ? '✓ Logged In' : '✗ Not Logged In';
+            loginStatus.className = 'status-value ' + (isLoggedIn ? 'active' : 'inactive');
+
+            // Check verification status
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const isVerified = currentUser.email && localStorage.getItem('userVerified_' + currentUser.email);
+            const verificationStatus = document.getElementById('verificationStatus');
+            verificationStatus.textContent = isVerified ? '✓ Verified' : '✗ Not Verified';
+            verificationStatus.className = 'status-value ' + (isVerified ? 'active' : 'inactive');
+
+            // Check remember me
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            const rememberExpiry = localStorage.getItem('rememberExpiry');
+            const rememberStatus = document.getElementById('rememberStatus');
+            const hasRemember = rememberedEmail && rememberExpiry;
+            rememberStatus.textContent = hasRemember ? '✓ Active' : '✗ Inactive';
+            rememberStatus.className = 'status-value ' + (hasRemember ? 'active' : 'inactive');
+
+            // Calculate remaining days
+            const sessionDays = document.getElementById('sessionDays');
+            if (rememberExpiry) {
+                const expiry = new Date(rememberExpiry);
+                const now = new Date();
+                const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+                sessionDays.textContent = daysLeft > 0 ? daysLeft + ' days' : 'Expired';
+                sessionDays.className = 'status-value ' + (daysLeft > 0 ? 'active' : 'inactive');
+            } else {
+                sessionDays.textContent = 'N/A';
+                sessionDays.className = 'status-value inactive';
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('This will clear all login data, verification status, and remember me settings. Continue?')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                alert('✓ All data cleared successfully!');
+                updateStatus();
+            }
+        }
+
+        function clearRememberMe() {
+            localStorage.removeItem('rememberedEmail');
+            localStorage.removeItem('rememberExpiry');
+            alert('✓ Remember Me data cleared!');
+            updateStatus();
+        }
+
+        function testDocUpload() {
+            alert('📄 Document Upload Demo:\n\n1. Select document type (Passport, Driver\'s License, etc.)\n2. Click upload area or drag & drop file\n3. Supported: PNG, JPG, PDF (max 10MB)\n4. Preview appears with file info\n5. Can remove and re-upload\n\nGo to verify.html to try it live!');
+        }
+
+        function testSelfie() {
+            alert('🤳 Selfie Verification Demo:\n\n1. Click "Start Camera" button\n2. Browser will request camera permission\n3. Position face in frame\n4. Click "Capture Photo"\n5. Review captured image\n6. Retake or confirm\n\nGo to verify.html (Step 3) to try it live!');
+        }
+
+        function testRememberMe() {
+            const email = prompt('Enter an email to simulate Remember Me:');
+            if (email) {
+                localStorage.setItem('rememberedEmail', email);
+                localStorage.setItem('rememberExpiry', new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString());
+                alert('✓ Remember Me activated for 30 days!\n\nEmail: ' + email + '\n\nGo to login.html to see it auto-filled.');
+                updateStatus();
+            }
+        }
+
+        function startFullFlow() {
+            if (confirm('This will start the complete verification flow:\n\n1. Phone OTP Verification\n2. Document Upload (eKYC)\n3. Selfie Verification\n4. Completion & Auto-login\n\nReady to begin?')) {
+                sessionStorage.setItem('pendingEmail', 'demo@realestate.com');
+                window.location.href = 'verify.html';
+            }
+        }
+
+        // Show welcome notification
+        setTimeout(() => {
+            showNotification('👋 Welcome to the eKYC Demo! Explore all interactive verification features.');
+        }, 500);
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                color: #000;
+                padding: 20px 25px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.5s ease-out;
+                max-width: 350px;
+                font-weight: 500;
+                border-left: 4px solid #000;
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateX(100px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

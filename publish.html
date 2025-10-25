@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Property - RealEstate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .publish-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: #000;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Verification Status Badge */
+        .verification-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .verification-badge.verified {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .verification-badge.unverified {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+            cursor: pointer;
+        }
+
+        .verification-badge:hover.unverified {
+            background: #ffc107;
+            color: white;
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #666;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #000;
+            background: #f8f9ff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .location-helper {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-get-location {
+            padding: 8px 16px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-get-location:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-get-location:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .location-status {
+            padding: 8px 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .location-status.show {
+            display: block;
+        }
+
+        /* Property Type Selection */
+        .property-types {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .property-type-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .property-type-card:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+
+        .property-type-card.selected {
+            border-color: #000;
+            background: #000;
+            color: white;
+        }
+
+        .property-type-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .property-type-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Image Upload */
+        .upload-zone {
+            border: 3px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .upload-zone:hover {
+            border-color: #000;
+            background: #f8f9ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #000;
+            background: #f5f5f5;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #000;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #f0f0f0;
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .remove-image:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        /* Document Upload */
+        .document-upload-zone {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .document-upload-zone:hover {
+            border-color: #000;
+            background: #f8f9ff;
+        }
+
+        .document-upload-zone.dragover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+
+        .document-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: #f0fdf4;
+            border: 2px solid #000;
+            border-radius: 8px;
+            gap: 12px;
+        }
+
+        .document-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .document-icon {
+            font-size: 28px;
+        }
+
+        .document-details {
+            flex: 1;
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: #000;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .document-size {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .remove-document {
+            background: #666;
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .remove-document:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        .document-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .document-type-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        /* Contact Toggle */
+        .contact-toggle {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-option {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .toggle-option:hover {
+            border-color: #000;
+            background: #f8f9ff;
+        }
+
+        .toggle-option.active {
+            border-color: #000;
+            background: #000;
+            color: white;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #000;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+        }
+
+        .btn-preview {
+            background: #333;
+            color: white;
+        }
+
+        .btn-preview:hover {
+            background: #2980b9;
+        }
+
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #000;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-content {
+                padding: 25px 20px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .property-types {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="publish-container">
+        <div class="header">
+            <div class="verification-badge unverified" id="verificationBadge">
+                <span>⚠️</span>
+                <span>Not Verified</span>
+            </div>
+            <h1>🏠 Publish Your Property</h1>
+            <p>List your property and reach thousands of potential buyers</p>
+        </div>
+
+        <form id="publishForm" class="form-content">
+            <!-- Property Type -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">🏘️</span>
+                    Property Type
+                </div>
+                <div class="property-types" id="propertyTypes">
+                    <div class="property-type-card" data-type="house">
+                        <div class="property-type-icon">🏡</div>
+                        <div class="property-type-name">House</div>
+                    </div>
+                    <div class="property-type-card" data-type="apartment">
+                        <div class="property-type-icon">🏢</div>
+                        <div class="property-type-name">Apartment</div>
+                    </div>
+                    <div class="property-type-card" data-type="villa">
+                        <div class="property-type-icon">🏰</div>
+                        <div class="property-type-name">Villa</div>
+                    </div>
+                    <div class="property-type-card" data-type="land">
+                        <div class="property-type-icon">🌳</div>
+                        <div class="property-type-name">Land</div>
+                    </div>
+                </div>
+                <input type="hidden" id="propertyType" name="propertyType" required>
+            </div>
+
+            <!-- Basic Information -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📝</span>
+                    Basic Information
+                </div>
+                <div class="form-group">
+                    <label for="title">Property Title <span class="required">*</span></label>
+                    <input type="text" id="title" name="title" placeholder="e.g., Modern 3BR House with Garden" required>
+                    <div class="input-hint">Make it catchy and descriptive</div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" placeholder="Describe your property in detail..." required></textarea>
+                    <div class="input-hint">Include key features, nearby amenities, and unique selling points</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price <span class="required">*</span></label>
+                        <input type="number" id="price" name="price" placeholder="1500000" required>
+                        <div class="input-hint">Enter amount in USD</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Listing Type <span class="required">*</span></label>
+                        <select id="category" name="category" required>
+                            <option value="">Select type</option>
+                            <option value="sale">For Sale</option>
+                            <option value="rent">For Rent</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Details -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📐</span>
+                    Property Details
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bedrooms">Bedrooms <span class="required">*</span></label>
+                        <input type="number" id="bedrooms" name="bedrooms" min="0" placeholder="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bathrooms">Bathrooms <span class="required">*</span></label>
+                        <input type="number" id="bathrooms" name="bathrooms" min="0" placeholder="2" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="area">Area (sqft) <span class="required">*</span></label>
+                        <input type="number" id="area" name="area" min="0" placeholder="2500" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="yearBuilt">Year Built</label>
+                        <input type="number" id="yearBuilt" name="yearBuilt" min="1800" max="2025" placeholder="2020">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📍</span>
+                    Location
+                </div>
+                <div class="location-helper">
+                    <button type="button" class="btn-get-location" id="getLocationBtn">
+                        <span>📍</span>
+                        <span>Get My Location</span>
+                    </button>
+                    <div class="location-status" id="locationStatus">
+                        ✓ Location recorded
+                    </div>
+                </div>
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                <div class="form-group">
+                    <label for="address">Street Address <span class="required">*</span></label>
+                    <input type="text" id="address" name="address" placeholder="123 Main Street" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City <span class="required">*</span></label>
+                        <input type="text" id="city" name="city" placeholder="San Francisco" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State/Province <span class="required">*</span></label>
+                        <input type="text" id="state" name="state" placeholder="California" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="zipcode">ZIP/Postal Code <span class="required">*</span></label>
+                        <input type="text" id="zipcode" name="zipcode" placeholder="94102" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country <span class="required">*</span></label>
+                        <input type="text" id="country" name="country" placeholder="United States" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📸</span>
+                    Property Images
+                </div>
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">🖼️</div>
+                    <div class="upload-text">Click to upload or drag and drop</div>
+                    <div class="upload-hint">Upload up to 10 images (JPG, PNG, max 5MB each)</div>
+                    <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
+                </div>
+                <div class="image-preview-grid" id="imagePreviewGrid"></div>
+            </div>
+
+            <!-- Legal Documents -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📄</span>
+                    Legal Documents
+                </div>
+                <div class="input-hint" style="margin-bottom: 15px;">Upload property-related legal documents (optional but recommended for buyer confidence)</div>
+                <div class="document-types">
+                    <div class="document-type-label">
+                        <span>📜</span> Property Deed
+                    </div>
+                    <div class="document-type-label">
+                        <span>🏛️</span> Title Certificate
+                    </div>
+                    <div class="document-type-label">
+                        <span>✅</span> Inspection Report
+                    </div>
+                    <div class="document-type-label">
+                        <span>📋</span> Tax Records
+                    </div>
+                    <div class="document-type-label">
+                        <span>🔍</span> Survey Report
+                    </div>
+                    <div class="document-type-label">
+                        <span>📝</span> Other Documents
+                    </div>
+                </div>
+                <div class="document-upload-zone" id="documentUploadZone">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Click to upload or drag and drop documents</div>
+                    <div class="upload-hint">Accepted formats: PDF, DOC, DOCX, JPG, PNG (max 10MB each)</div>
+                    <input type="file" id="documentUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display: none;">
+                </div>
+                <div class="document-list" id="documentList"></div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📞</span>
+                    Contact Information
+                </div>
+                <div class="contact-toggle">
+                    <div class="toggle-option active" data-contact="personal">Use My Info</div>
+                    <div class="toggle-option" data-contact="custom">Custom Contact</div>
+                </div>
+                <div id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactName">Full Name <span class="required">*</span></label>
+                            <input type="text" id="contactName" name="contactName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email <span class="required">*</span></label>
+                            <input type="email" id="contactEmail" name="contactEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhone">Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="contactPhone" name="contactPhone" placeholder="+1 (555) 123-4567" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" id="saveDraftBtn">💾 Save Draft</button>
+                <button type="button" class="btn btn-preview" id="previewBtn">👁️ Preview</button>
+                <button type="submit" class="btn btn-primary">🚀 Publish Property</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <h2 class="modal-title">Property Published!</h2>
+            <p class="modal-text">Your property has been successfully published and is now visible to potential buyers.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="addAnotherBtn">Add Another</button>
+                <button class="btn btn-primary" id="viewListingBtn">View Listing</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========= Property Type Selection =========
+        const propertyTypeCards = document.querySelectorAll('.property-type-card');
+        const propertyTypeInput = document.getElementById('propertyType');
+
+        propertyTypeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                propertyTypeCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                propertyTypeInput.value = card.dataset.type;
+            });
+        });
+
+        // ========= Image Upload =========
+        const uploadZone = document.getElementById('uploadZone');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreviewGrid = document.getElementById('imagePreviewGrid');
+        let uploadedImages = [];
+
+        uploadZone.addEventListener('click', () => imageUpload.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imageUpload.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            if (uploadedImages.length + files.length > 10) {
+                showNotification('Maximum 10 images allowed', 'error');
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Only image files allowed', 'error');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image size must be less than 5MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push({ file, url: e.target.result });
+                    renderImagePreviews();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderImagePreviews() {
+            imagePreviewGrid.innerHTML = uploadedImages.map((img, index) => `
+                <div class="image-preview-item">
+                    <img src="${img.url}" alt="Preview ${index + 1}">
+                    <button type="button" class="remove-image" onclick="removeImage(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            renderImagePreviews();
+        }
+
+        // ========= Document Upload =========
+        const documentUploadZone = document.getElementById('documentUploadZone');
+        const documentUpload = document.getElementById('documentUpload');
+        const documentList = document.getElementById('documentList');
+        let uploadedDocuments = [];
+
+        documentUploadZone.addEventListener('click', () => documentUpload.click());
+
+        documentUploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            documentUploadZone.classList.add('dragover');
+        });
+
+        documentUploadZone.addEventListener('dragleave', () => {
+            documentUploadZone.classList.remove('dragover');
+        });
+
+        documentUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            documentUploadZone.classList.remove('dragover');
+            handleDocumentFiles(e.dataTransfer.files);
+        });
+
+        documentUpload.addEventListener('change', (e) => {
+            handleDocumentFiles(e.target.files);
+        });
+
+        function handleDocumentFiles(files) {
+            Array.from(files).forEach(file => {
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showNotification('Document size must be less than 10MB', 'error');
+                    return;
+                }
+
+                // Check file type
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedTypes.includes(file.type)) {
+                    showNotification('Invalid file type. Only PDF, DOC, DOCX, JPG, PNG allowed', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedDocuments.push({ 
+                        file, 
+                        url: e.target.result,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type
+                    });
+                    renderDocumentList();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderDocumentList() {
+            documentList.innerHTML = uploadedDocuments.map((doc, index) => {
+                const icon = doc.type.includes('pdf') ? '📕' : 
+                           doc.type.includes('word') || doc.type.includes('document') ? '📘' : '🖼️';
+                const sizeKB = (doc.size / 1024).toFixed(1);
+                
+                return `
+                    <div class="document-item">
+                        <div class="document-info">
+                            <div class="document-icon">${icon}</div>
+                            <div class="document-details">
+                                <div class="document-name">${doc.name}</div>
+                                <div class="document-size">${sizeKB} KB</div>
+                            </div>
+                        </div>
+                        <button type="button" class="remove-document" onclick="removeDocument(${index})">×</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeDocument(index) {
+            uploadedDocuments.splice(index, 1);
+            renderDocumentList();
+        }
+
+        // ========= Contact Toggle =========
+        const toggleOptions = document.querySelectorAll('.toggle-option');
+        const contactName = document.getElementById('contactName');
+        const contactEmail = document.getElementById('contactEmail');
+        const contactPhone = document.getElementById('contactPhone');
+
+        toggleOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                toggleOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+
+                if (option.dataset.contact === 'personal') {
+                    // Load user info from localStorage
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                    contactName.value = currentUser.name || '';
+                    contactEmail.value = currentUser.email || '';
+                    contactPhone.value = currentUser.phone || '';
+                } else {
+                    contactName.value = '';
+                    contactEmail.value = '';
+                    contactPhone.value = '';
+                }
+            });
+        });
+
+        // ========= Form Submission =========
+        const publishForm = document.getElementById('publishForm');
+        const successModal = document.getElementById('successModal');
+
+        publishForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Validate property type
+            if (!propertyTypeInput.value) {
+                showNotification('Please select a property type', 'error');
+                return;
+            }
+
+            // Validate images
+            if (uploadedImages.length === 0) {
+                showNotification('Please upload at least one image', 'error');
+                return;
+            }
+
+            // Collect form data
+            const formData = new FormData(publishForm);
+            const propertyData = {
+                id: Date.now(),
+                propertyType: propertyTypeInput.value,
+                title: formData.get('title'),
+                description: formData.get('description'),
+                price: formData.get('price'),
+                category: formData.get('category'),
+                bedrooms: formData.get('bedrooms'),
+                bathrooms: formData.get('bathrooms'),
+                area: formData.get('area'),
+                yearBuilt: formData.get('yearBuilt'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                zipcode: formData.get('zipcode'),
+                country: formData.get('country'),
+                location: {
+                    latitude: formData.get('latitude') || null,
+                    longitude: formData.get('longitude') || null
+                },
+                images: uploadedImages.map(img => img.url),
+                documents: uploadedDocuments.map(doc => ({
+                    name: doc.name,
+                    url: doc.url,
+                    size: doc.size,
+                    type: doc.type
+                })),
+                contact: {
+                    name: formData.get('contactName'),
+                    email: formData.get('contactEmail'),
+                    phone: formData.get('contactPhone')
+                },
+                publishedDate: new Date().toISOString(),
+                timestamp: Date.now(),
+                userEmail: currentUser.email || 'unknown@example.com',
+                status: 'active',
+                views: 0,
+                inquiries: 0,
+                favorites: 0
+            };
+
+            // Save to localStorage
+            const publishedProperties = JSON.parse(localStorage.getItem('publishedProperties') || '[]');
+            publishedProperties.push(propertyData);
+            localStorage.setItem('publishedProperties', JSON.stringify(publishedProperties));
+
+            // Show success modal
+            successModal.classList.add('show');
+        });
+
+        // ========= Draft Saving =========
+        document.getElementById('saveDraftBtn').addEventListener('click', () => {
+            const formData = new FormData(publishForm);
+            const draftData = {
+                propertyType: propertyTypeInput.value,
+                title: formData.get('title'),
+                description: formData.get('description'),
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('propertyDraft', JSON.stringify(draftData));
+            showNotification('Draft saved successfully!');
+        });
+
+        // ========= Preview =========
+        document.getElementById('previewBtn').addEventListener('click', () => {
+            showNotification('Preview feature coming soon!');
+        });
+
+        // ========= Modal Actions =========
+        document.getElementById('addAnotherBtn').addEventListener('click', () => {
+            successModal.classList.remove('show');
+            publishForm.reset();
+            uploadedImages = [];
+            uploadedDocuments = [];
+            renderImagePreviews();
+            renderDocumentList();
+            propertyTypeCards.forEach(c => c.classList.remove('selected'));
+            propertyTypeInput.value = '';
+        });
+
+        document.getElementById('viewListingBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // ========= Notifications =========
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+
+            const bgColor = type === 'error' ? '#666' : '#000';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${bgColor};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                font-size: 14px;
+                font-weight: 500;
+            `;
+
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes slideOutRight {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(100px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ========= Verification Status =========
+        const verificationBadge = document.getElementById('verificationBadge');
+
+        function updateVerificationStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if (currentUser.email) {
+                const isVerified = currentUser.verified || localStorage.getItem('userVerified_' + currentUser.email) === 'true';
+                
+                if (isVerified) {
+                    verificationBadge.className = 'verification-badge verified';
+                    verificationBadge.innerHTML = '<span>✓</span><span>Verified</span>';
+                } else {
+                    verificationBadge.className = 'verification-badge unverified';
+                    verificationBadge.innerHTML = '<span>⚠️</span><span>Not Verified</span>';
+                    verificationBadge.style.cursor = 'pointer';
+                    verificationBadge.addEventListener('click', () => {
+                        if (confirm('You need to verify your account to publish properties. Go to verification page?')) {
+                            window.location.href = 'verify.html';
+                        }
+                    });
+                }
+            }
+        }
+
+        // ========= Location Recording =========
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const locationStatus = document.getElementById('locationStatus');
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+
+        getLocationBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error');
+                return;
+            }
+
+            getLocationBtn.disabled = true;
+            getLocationBtn.innerHTML = '<span>⏳</span><span>Getting location...</span>';
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    latitudeInput.value = position.coords.latitude;
+                    longitudeInput.value = position.coords.longitude;
+                    
+                    locationStatus.classList.add('show');
+                    getLocationBtn.innerHTML = '<span>✓</span><span>Location Recorded</span>';
+                    getLocationBtn.style.background = '#000';
+                    
+                    showNotification(`Location recorded: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`);
+                    
+                    // Optionally fetch address from coordinates using reverse geocoding
+                    // This is a placeholder - you'd need a geocoding API in production
+                    console.log('Coordinates:', position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    getLocationBtn.disabled = false;
+                    getLocationBtn.innerHTML = '<span>📍</span><span>Get My Location</span>';
+                    
+                    let errorMessage = 'Unable to get location';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location permission denied';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out';
+                            break;
+                    }
+                    showNotification(errorMessage, 'error');
+                }
+            );
+        });
+
+        // ========= Initialize =========
+        window.addEventListener('load', () => {
+            // Load user info by default
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if (currentUser.email) {
+                contactName.value = currentUser.name || '';
+                contactEmail.value = currentUser.email || '';
+                contactPhone.value = currentUser.phone || '';
+            }
+
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                showNotification('Please login to publish properties', 'error');
+                setTimeout(() => window.location.href = 'login.html', 2000);
+            } else {
+                // Update verification status
+                updateVerificationStatus();
+            }
+        });
+    </script>
+</body>
+</html>

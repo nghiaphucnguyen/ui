@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Verification - RealEstate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .verification-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .progress-steps { display: flex; justify-content: space-between; position: relative; margin-bottom: 10px; }
+        .progress-line { position: absolute; top: 20px; left: 0; right: 0; height: 4px; background: #e0e0e0; z-index: 1; }
+        .progress-line-active { position: absolute; top: 20px; left: 0; height: 4px; background: #000; z-index: 2; transition: width 0.5s ease; }
+        .progress-step { display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative; }
+        .step-circle { width: 40px; height: 40px; border-radius: 50%; background: white; border: 4px solid #e0e0e0; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all 0.3s; margin-bottom: 10px; }
+        .step-circle.active { border-color: #000; color: #000; transform: scale(1.1); }
+        .step-circle.completed { background: #000; border-color: #000; color: white; }
+        .step-label { font-size: 12px; color: #666; font-weight: 500; text-align: center; }
+        .step-label.active { color: #000; font-weight: 600; }
+
+        /* Content */
+        .verification-content { padding: 40px; }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        h2 { color: #000; margin-bottom: 10px; font-size: 28px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; line-height: 1.6; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #000; font-weight: 500; font-size: 14px; }
+        input, select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: all 0.3s; }
+        input:focus, select:focus { outline: none; border-color: #000; box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1); }
+        input.error { border-color: #666; }
+        input.success { border-color: #000; }
+        .error-message { color: #666; font-size: 12px; margin-top: 5px; display: none; }
+        .error-message.show { display: block; }
+        .success-message { color: #000; font-size: 12px; margin-top: 5px; display: none; }
+        .success-message.show { display: flex; align-items: center; gap: 5px; }
+
+        /* OTP Input */
+        .otp-container { display: flex; gap: 10px; justify-content: center; margin: 30px 0; }
+        .otp-input { width: 60px; height: 60px; text-align: center; font-size: 24px; font-weight: 700; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.3s; }
+        .otp-input:focus { border-color: #000; box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1); }
+        .otp-input.filled { border-color: #000; background: #f0fdf4; }
+
+        .resend-container { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
+        .resend-btn { color: #000; font-weight: 600; cursor: pointer; text-decoration: underline; transition: color 0.3s; }
+        .resend-btn:hover { color: #5568d3; }
+        .resend-btn.disabled { color: #999; cursor: not-allowed; text-decoration: none; pointer-events: none; }
+        .timer { color: #666; font-weight: 600; }
+
+        /* Document Upload */
+        .upload-area { border: 2px dashed #e0e0e0; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; background: #f8f9fa; }
+        .upload-area:hover { border-color: #000; background: #f5f5f5; }
+        .upload-area.dragover { border-color: #000; background: #f5f5f5; transform: scale(1.02); }
+        .upload-icon { font-size: 48px; margin-bottom: 15px; }
+        .upload-text { font-size: 16px; color: #000; margin-bottom: 5px; font-weight: 500; }
+        .upload-hint { font-size: 12px; color: #666; }
+
+        .file-preview { display: none; margin-top: 20px; padding: 15px; background: #f0fdf4; border: 2px solid #000; border-radius: 8px; }
+        .file-preview.show { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .file-info { display: flex; align-items: center; gap: 10px; }
+        .file-icon { font-size: 32px; }
+
+        /* Compact remove button (fixed) */
+        .remove-file { background: #666; color: white; border: none; width: 28px; height: 28px; padding: 0; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; flex: 0 0 auto; }
+        .remove-file:hover { background: #c0392b; transform: translateY(-1px); }
+
+        /* Document Type Selection */
+        .doc-types { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .doc-type-card { border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .doc-type-card:hover { border-color: #000; background: #f5f5f5; }
+        .doc-type-card.selected { border-color: #000; background: #000; color: white; }
+        .doc-type-icon { font-size: 36px; margin-bottom: 10px; }
+        .doc-type-name { font-weight: 600; margin-bottom: 5px; }
+        .doc-type-desc { font-size: 12px; opacity: 0.8; }
+
+        /* Camera Preview */
+        .camera-container { position: relative; margin: 20px 0; display: none; }
+        .camera-container.active { display: block; }
+        #video { width: 100%; border-radius: 12px; background: #000; }
+        #canvas { display: none; }
+        .camera-controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .camera-btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .camera-btn.capture { background: #000; color: white; }
+        .camera-btn.capture:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+        .camera-btn.cancel { background: #e0e0e0; color: #333; }
+        .selfie-preview { display: none; margin-top: 20px; }
+        .selfie-preview.show { display: block; }
+        .selfie-preview img { width: 100%; border-radius: 12px; border: 2px solid #000; }
+
+        /* Buttons */
+        .button-group { display: flex; gap: 15px; margin-top: 30px; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: #000; color: white; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: white; color: #000; border: 2px solid #000; }
+        .btn-secondary:hover { background: #000; color: white; }
+
+        /* Info Box */
+        .info-box { background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: flex; align-items: start; gap: 10px; }
+        .info-box.success { background: #d4edda; border-color: #28a745; }
+        .info-icon { font-size: 20px; }
+        .info-text { font-size: 13px; line-height: 1.5; color: #333; }
+
+        /* Verification Success */
+        .success-animation { text-align: center; padding: 40px; }
+        .checkmark { width: 100px; height: 100px; border-radius: 50%; background: #000; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; animation: scaleIn 0.5s ease-out; }
+        @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+        /* Verification Status Tags */
+        .status-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+            animation: slideIn 0.5s ease-out;
+        }
+        .status-tag.verified {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        .status-tag.unverified {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        .status-icon {
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .doc-types { grid-template-columns: 1fr; }
+            .otp-input { width: 50px; height: 50px; font-size: 20px; }
+            .verification-content { padding: 30px 20px; }
+            .progress-container { padding: 20px; }
+            .progress-steps { flex-wrap: wrap; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <!-- Verification Status Tag -->
+        <div class="status-tag unverified" id="statusTag">
+            <span class="status-icon">⚠️</span>
+            <span>Unverified Account</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line"></div>
+                <div class="progress-line-active" id="progressLine" style="width: 0%"></div>
+
+                <div class="progress-step" data-step="1">
+                    <div class="step-circle active" id="circle1">1</div>
+                    <div class="step-label active">Phone Verification</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle" id="circle2">2</div>
+                    <div class="step-label">Document Upload</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-circle" id="circle3">3</div>
+                    <div class="step-label">Selfie Verification</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-circle" id="circle4">4</div>
+                    <div class="step-label">Complete</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="verification-content">
+            <!-- Step 1: Phone Verification -->
+            <div class="step-content active" id="step1">
+                <h2>📱 Phone Verification</h2>
+                <p class="subtitle">We need to verify your phone number to ensure account security and enable important notifications about your real estate transactions.</p>
+
+                <div class="info-box">
+                    <span class="info-icon">ℹ️</span>
+                    <div class="info-text">
+                        <strong>Why verify your phone?</strong><br />
+                        • Secure your account with 2-factor authentication<br />
+                        • Receive instant property alerts<br />
+                        • Connect with verified agents safely
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+84 912345678" required />
+                    <div class="error-message" id="phoneError">Please enter a valid phone number (E.164, e.g., +84912345678)</div>
+                    <div class="success-message" id="phoneSuccess">✓ Phone number verified</div>
+                </div>
+
+                <div id="otpSection" style="display: none;">
+                    <label>Enter 6-Digit OTP Code</label>
+                    <div class="otp-container">
+                        <input type="text" class="otp-input" maxlength="1" data-index="0" />
+                        <input type="text" class="otp-input" maxlength="1" data-index="1" />
+                        <input type="text" class="otp-input" maxlength="1" data-index="2" />
+                        <input type="text" class="otp-input" maxlength="1" data-index="3" />
+                        <input type="text" class="otp-input" maxlength="1" data-index="4" />
+                        <input type="text" class="otp-input" maxlength="1" data-index="5" />
+                    </div>
+
+                    <div class="resend-container">
+                        <span>Didn't receive the code? </span>
+                        <span class="resend-btn disabled" id="resendBtn">Resend in <span class="timer" id="timer">60</span>s</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" onclick="window.location.href='login.html'">Cancel</button>
+                    <button type="button" class="btn-primary" id="sendOtpBtn">Send OTP</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Document Upload -->
+            <div class="step-content" id="step2">
+                <h2>📄 Identity Verification</h2>
+                <p class="subtitle">Please upload a valid government-issued ID to verify your identity. This helps us maintain a secure and trusted real estate marketplace.</p>
+
+                <div class="info-box success">
+                    <span class="info-icon">✓</span>
+                    <div class="info-text"><strong>Phone verified successfully!</strong> Your number is now secured.</div>
+                </div>
+
+                <label>Select Document Type</label>
+                <div class="doc-types">
+                    <div class="doc-type-card" data-doc-type="passport">
+                        <div class="doc-type-icon">🛂</div>
+                        <div class="doc-type-name">Passport</div>
+                        <div class="doc-type-desc">International ID</div>
+                    </div>
+                    <div class="doc-type-card" data-doc-type="drivers-license">
+                        <div class="doc-type-icon">🪪</div>
+                        <div class="doc-type-name">Driver's License</div>
+                        <div class="doc-type-desc">State-issued ID</div>
+                    </div>
+                    <div class="doc-type-card" data-doc-type="national-id">
+                        <div class="doc-type-icon">🆔</div>
+                        <div class="doc-type-name">National ID</div>
+                        <div class="doc-type-desc">Government ID</div>
+                    </div>
+                    <div class="doc-type-card" data-doc-type="other">
+                        <div class="doc-type-icon">📋</div>
+                        <div class="doc-type-name">Other Document</div>
+                        <div class="doc-type-desc">Valid government ID</div>
+                    </div>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Click to upload or drag and drop</div>
+                    <div class="upload-hint">PNG, JPG, PDF up to 10MB</div>
+                    <input type="file" id="fileInput" accept="image/*,application/pdf" style="display: none;" />
+                </div>
+
+                <div class="file-preview" id="filePreview">
+                    <div class="file-info">
+                        <span class="file-icon">📄</span>
+                        <div>
+                            <div id="fileName" style="font-weight: 600;"></div>
+                            <div id="fileSize" style="font-size: 12px; color: #666;"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="remove-file" id="removeFile" aria-label="Remove file" title="Remove file">&times;</button>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" id="backToStep1">Back</button>
+                    <button type="button" class="btn-primary" id="continueToStep3" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Selfie Verification -->
+            <div class="step-content" id="step3">
+                <h2>🤳 Selfie Verification</h2>
+                <p class="subtitle">Take a selfie to confirm that you're the person in the ID document. Make sure your face is clearly visible and well-lit.</p>
+
+                <div class="info-box">
+                    <span class="info-icon">💡</span>
+                    <div class="info-text">
+                        <strong>Tips for a good selfie:</strong><br />
+                        • Face the camera directly<br />
+                        • Remove glasses and hats<br />
+                        • Ensure good lighting<br />
+                        • Don't smile or make expressions
+                    </div>
+                </div>
+
+                <div class="camera-container" id="cameraContainer">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas"></canvas>
+                    <div class="camera-controls">
+                        <button type="button" class="camera-btn capture" id="captureBtn">📸 Capture Photo</button>
+                        <button type="button" class="camera-btn cancel" id="stopCameraBtn">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="selfie-preview" id="selfiePreview">
+                    <img id="selfieImage" src="" alt="Selfie" />
+                    <div class="button-group" style="margin-top: 15px;">
+                        <button type="button" class="btn-secondary" id="retakeBtn">Retake</button>
+                        <button type="button" class="btn-primary" id="useSelfieBtn">Use This Photo</button>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-primary" id="startCameraBtn" style="width: 100%;">📷 Start Camera</button>
+
+                <div class="button-group" style="margin-top: 15px;">
+                    <button type="button" class="btn-secondary" id="backToStep2">Back</button>
+                    <button type="button" class="btn-primary" id="skipSelfie" disabled>Skip for Now</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Verification Complete -->
+            <div class="step-content" id="step4">
+                <div class="success-animation">
+                    <div class="checkmark">✓</div>
+                    <h2>Verification Complete! 🎉</h2>
+                    <p class="subtitle">Your account has been successfully verified. You can now access all features of our real estate platform.</p>
+
+                    <div class="info-box success" style="text-align: left; max-width: 500px; margin: 30px auto;">
+                        <span class="info-icon">✓</span>
+                        <div class="info-text">
+                            <strong>You're all set!</strong><br />
+                            • ✓ Phone number verified<br />
+                            • ✓ Identity document confirmed<br />
+                            • ✓ Selfie verification complete<br />
+                            • ✓ Account security enhanced
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-primary" id="completeBtn" style="max-width: 300px; margin: 0 auto;">Continue to Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========= State =========
+        let currentStep = 1;
+        let phoneVerified = false;
+        let documentUploaded = false;
+        let selfieVerified = false;
+        let selectedDocType = '';
+        let uploadedFile = null;
+        let capturedSelfie = null;
+
+        // ========= Status Tag Management =========
+        const statusTag = document.getElementById('statusTag');
+        
+        function updateStatusTag(isVerified) {
+            if (isVerified) {
+                statusTag.className = 'status-tag verified';
+                statusTag.innerHTML = '<span class="status-icon">✓</span><span>Verified Account</span>';
+            } else {
+                statusTag.className = 'status-tag unverified';
+                statusTag.innerHTML = '<span class="status-icon">⚠️</span><span>Unverified Account</span>';
+            }
+        }
+
+        // Check verification status on page load
+        function checkInitialVerificationStatus() {
+            const email = sessionStorage.getItem('pendingEmail');
+            if (email) {
+                const isVerified = localStorage.getItem('userVerified_' + email) === 'true';
+                updateStatusTag(isVerified);
+            }
+        }
+
+        // ========= Step 1: Phone & OTP =========
+        const phoneInput = document.getElementById('phone');
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        const otpSection = document.getElementById('otpSection');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const resendBtn = document.getElementById('resendBtn');
+        const timerSpan = document.getElementById('timer');
+        const phoneError = document.getElementById('phoneError');
+        const phoneSuccess = document.getElementById('phoneSuccess');
+
+        let otpTimer = null;
+        let otpCode = '';
+
+        // E.164 phone validation (international-friendly)
+        function isValidPhoneE164(v) {
+            return /^\+?[1-9]\d{7,14}$/.test(v.trim());
+        }
+
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function handleSendOtp() {
+            const phone = phoneInput.value.trim();
+            if (!isValidPhoneE164(phone)) {
+                phoneError.classList.add('show');
+                phoneInput.classList.add('error');
+                return;
+            }
+            phoneError.classList.remove('show');
+            phoneInput.classList.remove('error');
+            phoneInput.disabled = true;
+
+            // Create and send OTP (demo: console output)
+            otpCode = generateOTP();
+            console.log('OTP Code:', otpCode); // TODO: Replace with SMS API in production
+            showNotification(`OTP sent to ${phone}! (Check console in demo)`);
+
+            // Show OTP UI and start timer
+            otpSection.style.display = 'block';
+            setSendButtonMode('verify');
+            startOTPTimer();
+            otpInputs[0].focus();
+        }
+
+        function handleVerifyOtp() {
+            const enteredOTP = Array.from(otpInputs).map((input) => input.value).join('');
+            if (enteredOTP.length !== 6) {
+                showNotification('Please enter complete 6-digit OTP', 'error');
+                return;
+            }
+            // Strict check against the generated OTP (fixed)
+            if (enteredOTP === otpCode) {
+                phoneVerified = true;
+                phoneSuccess.classList.add('show');
+                phoneInput.classList.add('success');
+                otpInputs.forEach((input) => { input.disabled = true; input.classList.add('success'); });
+                clearInterval(otpTimer);
+                showNotification('Phone verified successfully! ✓');
+                setTimeout(() => { goToStep(2); }, 1000);
+            } else {
+                otpInputs.forEach((input) => {
+                    input.value = '';
+                    input.classList.remove('filled');
+                    input.classList.add('error');
+                    setTimeout(() => input.classList.remove('error'), 450);
+                });
+                showNotification('Incorrect code. Please try again.', 'error');
+                otpInputs[0].focus();
+            }
+        }
+
+        function setSendButtonMode(mode) {
+            if (mode === 'verify') {
+                sendOtpBtn.textContent = 'Verify OTP';
+                sendOtpBtn.removeEventListener('click', handleSendOtp);
+                sendOtpBtn.addEventListener('click', handleVerifyOtp);
+            } else {
+                sendOtpBtn.textContent = 'Send OTP';
+                sendOtpBtn.removeEventListener('click', handleVerifyOtp);
+                sendOtpBtn.addEventListener('click', handleSendOtp);
+            }
+        }
+
+        sendOtpBtn.addEventListener('click', handleSendOtp);
+
+        // OTP Inputs: digits-only, auto-advance, paste support
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 1);
+                const value = e.target.value;
+                if (value && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                input.classList.toggle('filled', !!value);
+                const allFilled = Array.from(otpInputs).every((inp) => inp.value);
+                if (allFilled) setTimeout(handleVerifyOtp, 300);
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) otpInputs[index - 1].focus();
+            });
+            input.addEventListener('paste', (e) => {
+                const data = (e.clipboardData || window.clipboardData).getData('text');
+                if (!data) return;
+                e.preventDefault();
+                const digits = data.replace(/\D/g, '').slice(0, 6);
+                digits.split('').forEach((ch, i) => {
+                    if (otpInputs[i]) {
+                        otpInputs[i].value = ch;
+                        otpInputs[i].classList.add('filled');
+                    }
+                });
+                if (digits.length === 6) setTimeout(handleVerifyOtp, 300);
+            });
+        });
+
+        function startOTPTimer() {
+            clearInterval(otpTimer);
+            let timeLeft = 60;
+            resendBtn.classList.add('disabled');
+            timerSpan.textContent = String(timeLeft);
+            otpTimer = setInterval(() => {
+                timeLeft--;
+                timerSpan.textContent = String(timeLeft);
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimer);
+                    resendBtn.classList.remove('disabled');
+                    resendBtn.textContent = 'Resend OTP';
+                    resendBtn.onclick = () => {
+                        // Reset inputs & resend code without changing button mode
+                        otpInputs.forEach((inp) => { inp.value = ''; inp.classList.remove('filled'); inp.disabled = false; });
+                        otpCode = generateOTP();
+                        console.log('OTP Code (resend):', otpCode);
+                        showNotification('New OTP sent! (Check console in demo)');
+                        startOTPTimer();
+                        otpInputs[0].focus();
+                    };
+                }
+            }, 1000);
+        }
+
+        // ========= Step 2: Document Upload =========
+        const docTypeCards = document.querySelectorAll('.doc-type-card');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const removeFileBtn = document.getElementById('removeFile');
+        const continueToStep3Btn = document.getElementById('continueToStep3');
+        const backToStep1Btn = document.getElementById('backToStep1');
+
+        docTypeCards.forEach((card) => {
+            card.addEventListener('click', () => {
+                docTypeCards.forEach((c) => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedDocType = card.dataset.docType;
+                showNotification(`Selected: ${card.querySelector('.doc-type-name').textContent}`);
+                checkDocumentStep();
+            });
+        });
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFileUpload(files[0]);
+        });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFileUpload(e.target.files[0]); });
+
+        function handleFileUpload(file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (!validTypes.includes(file.type)) { showNotification('Please upload a valid image or PDF file', 'error'); return; }
+            if (file.size > maxSize) { showNotification('File size must be less than 10MB', 'error'); return; }
+            uploadedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            filePreview.classList.add('show');
+            uploadArea.style.display = 'none';
+            documentUploaded = true;
+            showNotification('Document uploaded successfully! ✓');
+            checkDocumentStep();
+        }
+
+        removeFileBtn.addEventListener('click', () => {
+            uploadedFile = null;
+            documentUploaded = false;
+            filePreview.classList.remove('show');
+            uploadArea.style.display = 'block';
+            fileInput.value = '';
+            checkDocumentStep();
+        });
+
+        function checkDocumentStep() {
+            continueToStep3Btn.disabled = !(selectedDocType && documentUploaded);
+        }
+
+        continueToStep3Btn.addEventListener('click', () => goToStep(3));
+        backToStep1Btn.addEventListener('click', () => goToStep(1));
+
+        // ========= Step 3: Selfie =========
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const cameraContainer = document.getElementById('cameraContainer');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
+        const selfiePreview = document.getElementById('selfiePreview');
+        const selfieImage = document.getElementById('selfieImage');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const useSelfieBtn = document.getElementById('useSelfieBtn');
+        const backToStep2Btn = document.getElementById('backToStep2');
+
+        let stream = null;
+
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = stream;
+                cameraContainer.classList.add('active');
+                startCameraBtn.style.display = 'none';
+                showNotification('Camera started! Position your face in the frame.');
+            } catch (error) {
+                showNotification('Unable to access camera. Please check permissions.', 'error');
+            }
+        });
+
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            capturedSelfie = canvas.toDataURL('image/jpeg');
+            selfieImage.src = capturedSelfie;
+            if (stream) stream.getTracks().forEach((track) => track.stop());
+            cameraContainer.classList.remove('active');
+            selfiePreview.classList.add('show');
+            showNotification('Photo captured! Review and confirm.');
+        });
+
+        stopCameraBtn.addEventListener('click', () => {
+            if (stream) stream.getTracks().forEach((track) => track.stop());
+            cameraContainer.classList.remove('active');
+            startCameraBtn.style.display = 'block';
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            selfiePreview.classList.remove('show');
+            startCameraBtn.style.display = 'block';
+            capturedSelfie = null;
+        });
+
+        useSelfieBtn.addEventListener('click', () => {
+            selfieVerified = true;
+            showNotification('Selfie verified! Processing verification...');
+            useSelfieBtn.textContent = 'Processing...';
+            useSelfieBtn.disabled = true;
+            setTimeout(() => { goToStep(4); }, 1200);
+        });
+
+        backToStep2Btn.addEventListener('click', () => goToStep(2));
+
+        // ========= Step 4: Complete =========
+        document.getElementById('completeBtn').addEventListener('click', () => {
+            const email = sessionStorage.getItem('pendingEmail');
+            if (email) {
+                localStorage.setItem('userVerified_' + email, 'true');
+                localStorage.setItem('verificationDate_' + email, new Date().toISOString());
+                const userData = { email, name: email.split('@')[0], loginTime: new Date().toISOString(), verified: true };
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                localStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.removeItem('pendingEmail');
+                sessionStorage.removeItem('pendingPassword');
+                
+                // Update status tag to verified
+                updateStatusTag(true);
+            }
+            showNotification('Redirecting to dashboard...');
+            setTimeout(() => { window.location.href = 'index.html'; }, 800);
+        });
+
+        // ========= Navigation & Progress =========
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach((content) => content.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            updateProgress(step);
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgress(step) {
+            const circles = [
+                document.getElementById('circle1'),
+                document.getElementById('circle2'),
+                document.getElementById('circle3'),
+                document.getElementById('circle4')
+            ];
+            const labels = document.querySelectorAll('.step-label');
+            const progressLine = document.getElementById('progressLine');
+
+            circles.forEach((circle, index) => {
+                if (index < step - 1) { circle.classList.add('completed'); circle.classList.remove('active'); circle.textContent = '✓'; }
+                else if (index === step - 1) { circle.classList.add('active'); circle.classList.remove('completed'); circle.textContent = index + 1; }
+                else { circle.classList.remove('active', 'completed'); circle.textContent = index + 1; }
+            });
+            labels.forEach((label, index) => { label.classList.toggle('active', index === step - 1); });
+            const progress = ((step - 1) / 3) * 100;
+            progressLine.style.width = progress + '%';
+        }
+
+        // ========= Helpers =========
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            const bgColor = type === 'error' ? '#666' : '#000';
+            notification.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${bgColor}; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; animation: slideInRight 0.3s ease-out; font-size: 14px; font-weight: 500; max-width: 350px;`;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.animation = 'slideOutRight 0.3s ease-out'; setTimeout(() => notification.remove(), 300); }, 4000);
+        }
+
+        // Notification animations
+        const style = document.createElement('style');
+        style.textContent = `@keyframes slideInRight{from{opacity:0;transform:translateX(100px)}to{opacity:1;transform:translateX(0)}}@keyframes slideOutRight{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100px)}}`;
+        document.head.appendChild(style);
+
+        // If redirected from login
+        window.addEventListener('load', () => {
+            const pendingEmail = sessionStorage.getItem('pendingEmail');
+            if (pendingEmail) showNotification(`Verifying account for ${pendingEmail}`);
+            
+            // Check and update verification status tag
+            checkInitialVerificationStatus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Estate Market - UI Wireframe (fixed tags)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; color: #333; }
+
+    /* Header / Navigation */
+    header { background-color: #000; color: white; padding: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    .logo { font-size: 24px; font-weight: bold; }
+    nav { display: flex; gap: 30px; }
+    nav a { color: white; text-decoration: none; transition: color 0.3s; }
+    nav a:hover { color: #666; }
+    .auth-buttons { display: flex; gap: 15px; }
+    button { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    .btn-login { background-color: transparent; color: white; border: 1px solid white; }
+    .btn-login:hover { background-color: white; color: #000; }
+    .btn-signup { background-color: #333; color: white; }
+    .btn-signup:hover { background-color: #555; }
+    .btn-publish { background: #000; color: white; font-weight: 600; border: 2px solid #fff; }
+    .btn-publish:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+
+    /* Search Bar */
+    .search-section { background-color: white; padding: 15px 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .search-container { max-width: 1400px; margin: 0 auto; }
+    .search-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+    input:focus, select:focus { outline: none; border-color: #000; box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1); }
+    .search-row .btn-search { background-color: #000; color: white; grid-column: span 1; }
+    .search-row .btn-search:hover { background-color: #333; }
+
+    /* Main Container */
+    .container { max-width: 1400px; margin: 15px auto; padding: 0 10px; display: grid; grid-template-columns: 220px 1fr; gap: 15px; }
+
+    /* Sidebar Filters */
+    .sidebar { background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); height: fit-content; }
+    .filter-group { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
+    .filter-group:last-child { border-bottom: none; }
+    .filter-title { font-weight: 600; margin-bottom: 10px; color: #000; font-size: 13px; }
+    .filter-option { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; }
+    .filter-option input[type="checkbox"], .filter-option input[type="radio"] { margin-right: 10px; cursor: pointer; }
+    .filter-option label { cursor: pointer; font-size: 12px; }
+    .price-range { display: flex; gap: 8px; margin-bottom: 8px; }
+    .price-range input { flex: 1; padding: 6px; }
+
+    /* Main Content */
+    .main-content { display: flex; flex-direction: column; }
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background-color: white; padding: 12px; border-radius: 8px; }
+    .results-count { font-size: 13px; color: #666; }
+    .sort-options { display: flex; gap: 8px; }
+    .sort-options select { padding: 6px 10px; }
+
+    /* Property Grid */
+    .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .property-card { background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+    .property-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+
+    .property-image { width: 100%; height: 160px; background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDOY750p7eHVMuK4eedkoX2RAb51_JGiGIkg&s') center/cover no-repeat; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; position: relative; }
+    .property-image.img1 { background-image: url('https://i.ytimg.com/vi/Ua6C65IFQ_Y/maxresdefault.jpg'); }
+    .property-image.img2 { background-image: url('https://i.ytimg.com/vi/Q36THRWXRDY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAWDwEwXNEG6udMXXxNkjBCi4DRZg'); }
+    .property-image.img3 { background-image: url('https://assetsio.gnwcdn.com/treehouse-with-leafy-roof.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp'); }
+    .property-image.img4 { background-image: url('https://www.thespike.gg/_next/image?url=https%3A%2F%2Fthespike-strapi-cms.s3.us-east-1.amazonaws.com%2Fimage7_30cccb4bf5.jpg&w=3840&q=75'); }
+    .property-image.img5 { background-image: url('https://cdn.mos.cms.futurecdn.net/LhGUFiZ3y8QRxbkHztmVge.jpg'); }
+    .property-image.img6 { background-image: url('https://i.ytimg.com/vi/MPw__BWYBX8/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBEMnF_LnUIlyInSa2hMWas6SfZiA'); }
+    .property-image.placeholder { background-color: #f0f0f0; }
+
+    /* FIX: Keep container absolute; badges are normal flow within */
+    .badge-container { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; z-index: 2; max-width: calc(100% - 16px); }
+
+    /* FIX: Remove absolute positioning from individual badges so they don't overlap */
+    .badge { background-color: #666; color: white; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.12); cursor: pointer; }
+    .badge.featured { background-color: #000; }
+    .badge.verified { background-color: #000; }
+    .badge.unverified { background-color: #666; }
+    .badge.for-sale { background-color: #333; }
+    .badge.for-rent { background-color: #555; }
+
+    .property-details { padding: 15px; }
+    .property-type { color: #000; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+    .property-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #000; }
+    .property-address { color: #666; font-size: 12px; margin-bottom: 10px; }
+    .property-price { font-size: 18px; font-weight: 700; color: #000; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
+    .property-price::before { content: ''; display: inline-block; width: 18px; height: 18px; background: url('https://i.ibb.co/v6vp5F2R/image-removebg-preview.png') center/contain no-repeat; }
+    .property-features { display: flex; justify-content: space-around; border-top: 1px solid #eee; padding-top: 12px; font-size: 11px; color: #666; }
+    .feature { text-align: center; }
+    .feature-value { font-weight: 600; color: #000; }
+
+    .property-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .property-actions button { flex: 1; padding: 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .btn-view { background-color: #000; color: white; }
+    .btn-view:hover { background-color: #5568d3; }
+    .btn-favorite { background-color: #ecf0f1; color: #000; }
+    .btn-favorite:hover { background-color: #d5dbdb; }
+
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+    .pagination button { padding: 6px 10px; border: 1px solid #ddd; background-color: white; color: #333; border-radius: 4px; }
+    .pagination button.active { background-color: #000; color: white; border-color: #000; }
+    .pagination button:hover { background-color: #f5f5f5; }
+    .pagination button.active:hover { background-color: #000; }
+
+    /* Footer */
+    footer { background-color: #000; color: white; padding: 25px 10px; margin-top: 30px; }
+    .footer-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .footer-section h4 { margin-bottom: 12px; font-size: 13px; }
+    .footer-section a { display: block; color: #bdc3c7; text-decoration: none; font-size: 12px; margin-bottom: 8px; transition: color 0.3s; }
+    .footer-section a:hover { color: #333; }
+    .footer-bottom { text-align: center; padding-top: 15px; border-top: 1px solid #34495e; margin-top: 20px; color: #bdc3c7; font-size: 11px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      nav { gap: 15px; }
+      .search-row { grid-template-columns: 1fr; }
+      .properties-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideOutRight { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100px); } }
+    .property-card { animation: fadeIn 0.5s ease-out backwards; }
+    .property-card:nth-child(1) { animation-delay: 0.1s; }
+    .property-card:nth-child(2) { animation-delay: 0.2s; }
+    .property-card:nth-child(3) { animation-delay: 0.3s; }
+    .property-card:nth-child(4) { animation-delay: 0.4s; }
+    .property-card:nth-child(5) { animation-delay: 0.5s; }
+    .property-card:nth-child(6) { animation-delay: 0.6s; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo">🏠 RealEstate</div>
+      <nav>
+        <a href="my-posts.html">My Posts</a>
+      </nav>
+      <div class="auth-buttons">
+        <button class="btn-publish">📝 Publish Property</button>
+        <button class="btn-login">Login</button>
+        <button class="btn-signup">Sign Up</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search Section -->
+  <section class="search-section">
+    <div class="search-container">
+      <div class="search-row">
+        <input type="text" placeholder="Location (City, Address, or Zip)" />
+        <select>
+          <option>Property Type</option>
+          <option>House</option>
+          <option>Apartment</option>
+          <option>Townhouse</option>
+          <option>Condo</option>
+        </select>
+        <input type="number" placeholder="Min Price" />
+        <input type="number" placeholder="Max Price" />
+        <button class="btn-search">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="filter-group">
+        <div class="filter-title">Property Type</div>
+        <div class="filter-option"><input type="checkbox" id="type-house" /><label for="type-house">House</label></div>
+        <div class="filter-option"><input type="checkbox" id="type-apt" /><label for="type-apt">Apartment</label></div>
+        <div class="filter-option"><input type="checkbox" id="type-condo" /><label for="type-condo">Condo</label></div>
+        <div class="filter-option"><input type="checkbox" id="type-townhouse" /><label for="type-townhouse">Townhouse</label></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Listing</div>
+        <div class="filter-option"><input type="radio" name="listing" id="listing-any" value="any" checked /><label for="listing-any">Any</label></div>
+        <div class="filter-option"><input type="radio" name="listing" id="listing-sale" value="sale" /><label for="listing-sale">For Sale</label></div>
+        <div class="filter-option"><input type="radio" name="listing" id="listing-rent" value="rent" /><label for="listing-rent">For Rent</label></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Verification</div>
+        <div class="filter-option"><input type="radio" name="verify" id="verify-any" value="any" checked /><label for="verify-any">All</label></div>
+        <div class="filter-option"><input type="radio" name="verify" id="verify-verified" value="verified" /><label for="verify-verified">Verified only</label></div>
+        <div class="filter-option"><input type="radio" name="verify" id="verify-unverified" value="unverified" /><label for="verify-unverified">Unverified only</label></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Special</div>
+        <div class="filter-option"><input type="checkbox" id="featured-only" /><label for="featured-only">Featured only</label></div>
+        <div class="filter-option"><input type="checkbox" id="new-only" /><label for="new-only">New only</label></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Price Range</div>
+        <div class="price-range">
+          <input type="number" id="price-min" placeholder="Min" />
+          <input type="number" id="price-max" placeholder="Max" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Bedrooms</div>
+        <div class="filter-option"><input type="checkbox" id="beds-1" /><label for="beds-1">1+</label></div>
+        <div class="filter-option"><input type="checkbox" id="beds-2" /><label for="beds-2">2+</label></div>
+        <div class="filter-option"><input type="checkbox" id="beds-3" /><label for="beds-3">3+</label></div>
+        <div class="filter-option"><input type="checkbox" id="beds-4" /><label for="beds-4">4+</label></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Bathrooms</div>
+        <div class="filter-option"><input type="checkbox" id="baths-1" /><label for="baths-1">1+</label></div>
+        <div class="filter-option"><input type="checkbox" id="baths-2" /><label for="baths-2">2+</label></div>
+        <div class="filter-option"><input type="checkbox" id="baths-3" /><label for="baths-3">3+</label></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Size</div>
+        <div class="price-range">
+          <input type="number" id="size-min" placeholder="Min sqft" />
+          <input type="number" id="size-max" placeholder="Max sqft" />
+        </div>
+      </div>
+
+      <button class="btn-search" style="width: 100%; margin-top: 20px;">Apply Filters</button>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Results Header -->
+      <div class="results-header">
+        <span class="results-count">Showing 1-12 of 247 results</span>
+        <div class="sort-options">
+          <select>
+            <option>Sort By: Newest</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Bedrooms</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Properties Grid -->
+      <div class="properties-grid">
+        <!-- Property Card 1 -->
+        <div class="property-card">
+          <div class="property-image img1">
+            <div class="badge-container">
+              <div class="badge featured">Featured</div>
+              <div class="badge verified">✓ Verified</div>
+              <div class="badge for-sale">For Sale</div>
+            </div>
+          </div>
+          <div class="property-details">
+            <div class="property-type">House for Sale</div>
+            <div class="property-title">Modern Family Home</div>
+            <div class="property-address">123 Maple Street, Downtown</div>
+            <div class="property-price">450,000</div>
+            <div class="property-features">
+              <div class="feature"><div class="feature-value">4</div><div>Beds</div></div>
+              <div class="feature"><div class="feature-value">2.5</div><div>Baths</div></div>
+              <div class="feature"><div class="feature-value">2,400</div><div>sqft</div></div>
+            </div>
+            <div class="property-actions"><button class="btn-view">View</button><button class="btn-favorite">♥</button></div>
+          </div>
+        </div>
+
+        <!-- Property Card 2 -->
+        <div class="property-card">
+          <div class="property-image img2">
+            <div class="badge-container">
+              <div class="badge">New</div>
+              <div class="badge verified">✓ Verified</div>
+              <div class="badge for-rent">For Rent</div>
+            </div>
+          </div>
+          <div class="property-details">
+            <div class="property-type">Apartment for Rent</div>
+            <div class="property-title">Downtown Luxury Apt</div>
+            <div class="property-address">456 Oak Avenue, City Center</div>
+            <div class="property-price">2,500/mo</div>
+            <div class="property-features">
+              <div class="feature"><div class="feature-value">2</div><div>Beds</div></div>
+              <div class="feature"><div class="feature-value">2</div><div>Baths</div></div>
+              <div class="feature"><div class="feature-value">1,200</div><div>sqft</div></div>
+            </div>
+            <div class="property-actions"><button class="btn-view">View</button><button class="btn-favorite">♥</button></div>
+          </div>
+        </div>
+
+        <!-- Property Card 3 -->
+        <div class="property-card">
+          <div class="property-image img3">
+            <div class="badge-container">
+              <div class="badge unverified">⚠ Unverified</div>
+              <div class="badge for-sale">For Sale</div>
+            </div>
+          </div>
+          <div class="property-details">
+            <div class="property-type">Condo for Sale</div>
+            <div class="property-title">Beachside Condo</div>
+            <div class="property-address">789 Beach Road, Waterfront</div>
+            <div class="property-price">325,000</div>
+            <div class="property-features">
+              <div class="feature"><div class="feature-value">3</div><div>Beds</div></div>
+              <div class="feature"><div class="feature-value">2</div><div>Baths</div></div>
+              <div class="feature"><div class="feature-value">1,800</div><div>sqft</div></div>
+            </div>
+            <div class="property-actions"><button class="btn-view">View</button><button class="btn-favorite">♥</button></div>
+          </div>
+        </div>
+
+        <!-- Property Card 4 -->
+        <div class="property-card">
+          <div class="property-image img4">
+            <div class="badge-container">
+              <div class="badge verified">✓ Verified</div>
+              <div class="badge for-sale">For Sale</div>
+            </div>
+          </div>
+          <div class="property-details">
+            <div class="property-type">Townhouse for Sale</div>
+            <div class="property-title">Suburban Townhouse</div>
+            <div class="property-address">321 Oak Lane, Suburbs</div>
+            <div class="property-price">380,000</div>
+            <div class="property-features">
+              <div class="feature"><div class="feature-value">3</div><div>Beds</div></div>
+              <div class="feature"><div class="feature-value">2.5</div><div>Baths</div></div>
+              <div class="feature"><div class="feature-value">2,100</div><div>sqft</div></div>
+            </div>
+            <div class="property-actions"><button class="btn-view">View</button><button class="btn-favorite">♥</button></div>
+          </div>
+        </div>
+
+        <!-- Property Card 5 -->
+        <div class="property-card">
+          <div class="property-image img5">
+            <div class="badge-container">
+              <div class="badge">New</div>
+              <div class="badge unverified">⚠ Unverified</div>
+              <div class="badge for-rent">For Rent</div>
+            </div>
+          </div>
+          <div class="property-details">
+            <div class="property-type">House for Rent</div>
+            <div class="property-title">Family Home</div>
+            <div class="property-address">654 Elm Street, Neighborhood</div>
+            <div class="property-price">3,200/mo</div>
+            <div class="property-features">
+              <div class="feature"><div class="feature-value">4</div><div>Beds</div></div>
+              <div class="feature"><div class="feature-value">3</div><div>Baths</div></div>
+              <div class="feature"><div class="feature-value">2,600</div><div>sqft</div></div>
+            </div>
+            <div class="property-actions"><button class="btn-view">View</button><button class="btn-favorite">♥</button></div>
+          </div>
+        </div>
+
+        <!-- Property Card 6 -->
+        <div class="property-card">
+          <div class="property-image img6">
+            <!-- FIX: wrap single badge in container so position is consistent -->
+            <div class="badge-container">
+              <div class="badge featured">Featured</div>
+            </div>
+          </div>
+          <div class="property-details">
+            <div class="property-type">Apartment for Sale</div>
+            <div class="property-title">Penthouse Suite</div>
+            <div class="property-address">999 Tower Drive, Skyline</div>
+            <div class="property-price">650,000</div>
+            <div class="property-features">
+              <div class="feature"><div class="feature-value">3</div><div>Beds</div></div>
+              <div class="feature"><div class="feature-value">3</div><div>Baths</div></div>
+              <div class="feature"><div class="feature-value">2,800</div><div>sqft</div></div>
+            </div>
+            <div class="property-actions"><button class="btn-view">View</button><button class="btn-favorite">♥</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button>←</button>
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>5</button>
+        <button>→</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h4>About Us</h4>
+        <a href="#">Company Info</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-section">
+        <h4>For Buyers</h4>
+        <a href="#">Search Homes</a>
+        <a href="#">Mortgage Calculator</a>
+        <a href="#">Buyer Guide</a>
+        <a href="#">New Developments</a>
+      </div>
+      <div class="footer-section">
+        <h4>For Sellers</h4>
+        <a href="#">Sell Your Home</a>
+        <a href="#">Pricing</a>
+        <a href="#">Marketing Tools</a>
+        <a href="#">Schedule Tour</a>
+      </div>
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <a href="#">Help Center</a>
+        <a href="#">Contact Us</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 RealEstate. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // ========== User Authentication ==========
+    let currentUser = null; let isLoggedIn = false; let favorites = [];
+    window.addEventListener('load', () => { checkLoginStatus(); loadFavorites(); loadProperties(); });
+    function checkLoginStatus(){ const userData = localStorage.getItem('currentUser'); const loginStatus = localStorage.getItem('isLoggedIn'); if(userData && loginStatus === 'true'){ currentUser = JSON.parse(userData); isLoggedIn = true; updateUIForLoggedInUser(); }}
+    function updateUIForLoggedInUser(){ const authButtons = document.querySelector('.auth-buttons'); const isVerified = currentUser.verified || localStorage.getItem('userVerified_' + currentUser.email); const verificationBadge = isVerified ? '<span style="background:#000;color:white;padding:2px 8px;border-radius:12px;font-size:11px;margin-left:5px;">✓ Verified</span>' : '<span style="background:#666;color:white;padding:2px 8px;border-radius:12px;font-size:11px;margin-left:5px;cursor:pointer;" onclick="window.location.href=\'verify.html\'">! Not Verified</span>'; authButtons.innerHTML = `<div style="display:flex;align-items:center;gap:15px;"><button class="btn-publish" onclick="window.location.href='publish.html'">📝 Publish Property</button><span style="color:white;display:flex;align-items:center;">Welcome, ${currentUser.name}! ${verificationBadge}</span><button class="btn-signup" onclick="logout()">Logout</button></div>`; }
+    function logout(){ if(confirm('Are you sure you want to logout?')){ localStorage.removeItem('currentUser'); localStorage.removeItem('isLoggedIn'); location.reload(); }}
+
+    // ========== Navigation ==========
+    document.querySelectorAll('nav a').forEach(link=>{ 
+      link.addEventListener('click',e=>{ 
+        const href = link.getAttribute('href');
+        // Allow my-posts.html to navigate but check login
+        if (href === 'my-posts.html') {
+          if (!isLoggedIn) {
+            e.preventDefault();
+            alert('Please login to view your posts');
+            window.location.href = 'login.html';
+          }
+          // If logged in, allow default navigation
+        } else if (href.startsWith('#')) {
+          // Handle anchor links
+          e.preventDefault(); 
+          const section = href.replace('#',''); 
+          alert(`Navigating to ${section.toUpperCase()} section`); 
+        }
+      }); 
+    });
+    document.querySelector('.btn-login').addEventListener('click',()=>{ window.location.href='login.html'; });
+    document.querySelector('.btn-signup').addEventListener('click',()=>{ if(!isLoggedIn){ window.location.href='signup.html'; }});
+    document.querySelector('.btn-publish').addEventListener('click',()=>{ if(isLoggedIn){ window.location.href='publish.html'; } else { alert('Please login to publish properties'); window.location.href='login.html'; }});
+
+    // ========== Search ==========
+    const searchButtons=document.querySelectorAll('.btn-search'); searchButtons.forEach(btn=>{ btn.addEventListener('click',e=>{ e.preventDefault(); performSearch(); }); });
+    const locationInput=document.querySelector('.search-row input[placeholder*="Location"]'); locationInput.addEventListener('input',e=>{ if(e.target.value.length>2){ console.log('Searching for:', e.target.value); }});
+    function performSearch(){ const location=document.querySelector('.search-row input[placeholder*="Location"]').value; const propertyType=document.querySelector('.search-row select').value; const minPrice=document.querySelector('.search-row input[placeholder*="Min Price"]').value; const maxPrice=document.querySelector('.search-row input[placeholder*="Max Price"]').value; let message='Searching for properties:\n'; if(location) message+=`Location: ${location}\n`; if(propertyType && propertyType!=='Property Type') message+=`Type: ${propertyType}\n`; if(minPrice) message+=`Min Price: $${minPrice}\n`; if(maxPrice) message+=`Max Price: $${maxPrice}\n`; alert(message); filterProperties(); }
+
+    // ========== Filters ==========
+    const applyFiltersBtn = document.querySelectorAll('.sidebar .btn-search')[0];
+
+    const typeCheckboxMap = {
+      house: '#type-house',
+      apartment: '#type-apt',
+      condo: '#type-condo',
+      townhouse: '#type-townhouse'
+    };
+
+    const featuredOnly = document.getElementById('featured-only');
+    const newOnly = document.getElementById('new-only');
+    const priceMinEl = document.getElementById('price-min');
+    const priceMaxEl = document.getElementById('price-max');
+    const sizeMinEl  = document.getElementById('size-min');
+    const sizeMaxEl  = document.getElementById('size-max');
+
+    function getSelectedTypes() {
+      let types = Object.keys(typeCheckboxMap).filter(k => document.querySelector(typeCheckboxMap[k]).checked);
+      const selectVal = document.querySelector('.search-row select')?.value?.toLowerCase();
+      if (selectVal && selectVal !== 'property type') types = [selectVal];
+      return types;
+    }
+    function getMinFromCheckGroup(ids) {
+      for (let i = ids.length - 1; i >= 0; i--) {
+        const el = document.getElementById(ids[i]);
+        if (el && el.checked) return parseFloat(el.id.match(/\d+(?:\.\d+)?/)[0]);
+      }
+      return 0;
+    }
+    function updateFilterCount(){
+      let count = 0;
+      count += document.querySelectorAll('#type-house:checked, #type-apt:checked, #type-condo:checked, #type-townhouse:checked').length;
+      if ((document.querySelector('input[name="listing"]:checked')||{}).value !== 'any') count++;
+      if ((document.querySelector('input[name="verify"]:checked')||{}).value !== 'any') count++;
+      if (featuredOnly.checked) count++;
+      if (newOnly.checked) count++;
+      if (priceMinEl.value) count++;
+      if (priceMaxEl.value) count++;
+      if (document.getElementById('beds-1').checked || document.getElementById('beds-2').checked || document.getElementById('beds-3').checked || document.getElementById('beds-4').checked) count++;
+      if (document.getElementById('baths-1').checked || document.getElementById('baths-2').checked || document.getElementById('baths-3').checked) count++;
+      if (sizeMinEl.value) count++;
+      if (sizeMaxEl.value) count++;
+      if (applyFiltersBtn) applyFiltersBtn.textContent = count>0 ? `Apply Filters (${count})` : 'Apply Filters';
+    }
+    function filterProperties(){
+      const selectedTypes = getSelectedTypes();
+      const listingChoice = (document.querySelector('input[name="listing"]:checked')||{}).value || 'any';
+      const verifyChoice  = (document.querySelector('input[name="verify"]:checked')||{}).value || 'any';
+
+      // combine sidebar + top search prices
+      const topMin   = parseFloat(document.querySelector('.search-row input[placeholder*="Min Price"]')?.value || '0') || 0;
+      const topMaxV  = parseFloat(document.querySelector('.search-row input[placeholder*="Max Price"]')?.value || '');
+      const topMax   = !isNaN(topMaxV) && topMaxV>0 ? topMaxV : Infinity;
+      const sideMin  = parseFloat(priceMinEl?.value || '0') || 0;
+      const sideMaxV = parseFloat(priceMaxEl?.value || '');
+      const sideMax  = !isNaN(sideMaxV) && sideMaxV>0 ? sideMaxV : Infinity;
+      const priceMin = Math.max(topMin, sideMin);
+      const priceMax = Math.min(topMax, sideMax);
+
+      const bedsMin  = getMinFromCheckGroup(['beds-1','beds-2','beds-3','beds-4']);
+      const bathsMin = getMinFromCheckGroup(['baths-1','baths-2','baths-3']);
+      const sizeMin  = parseFloat(sizeMinEl?.value || '0') || 0;
+      const sizeMaxV = parseFloat(sizeMaxEl?.value || '');
+      const sizeMax  = !isNaN(sizeMaxV) && sizeMaxV>0 ? sizeMaxV : Infinity;
+
+      let visible = 0;
+      properties.forEach(p => {
+        let show = true;
+        if (selectedTypes.length && !selectedTypes.includes(p.typeLower)) show = false;
+        if (listingChoice !== 'any' && p.listing !== listingChoice) show = false;
+        if (verifyChoice === 'verified' && !p.verified) show = false;
+        if (verifyChoice === 'unverified' && p.verified) show = false;
+        if (featuredOnly.checked && !p.featured) show = false;
+        if (newOnly.checked && !p.isNew) show = false;
+        if (p.price < priceMin) show = false;
+        if (p.price > priceMax) show = false;
+        if (p.beds  < bedsMin)  show = false;
+        if (p.baths < bathsMin) show = false;
+        if (p.sqft  < sizeMin)  show = false;
+        if (p.sqft  > sizeMax)  show = false;
+
+        p.element.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      const pageSize = 12;
+      document.querySelector('.results-count').textContent = `Showing 1-${Math.min(pageSize, visible)} of ${visible} results`;
+      updateFilterCount();
+    }
+    // wire up inputs
+    const allFilterInputs = document.querySelectorAll('.sidebar input');
+    allFilterInputs.forEach(el => el.addEventListener('input', updateFilterCount));
+    allFilterInputs.forEach(el => el.addEventListener('change', filterProperties));
+    if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', filterProperties);
+    // top bar property-type select reacts too
+    document.querySelector('.search-row select').addEventListener('change', filterProperties);
+    // ========== Sort ==========
+    const sortSelect=document.querySelector('.sort-options select'); sortSelect.addEventListener('change',e=>{ const sortBy=e.target.value; showNotification(`Sorting by: ${sortBy}`); sortProperties(sortBy); });
+    function sortProperties(sortBy){ const grid=document.querySelector('.properties-grid'); grid.style.opacity='0.5'; setTimeout(()=>{ grid.style.opacity='1'; showNotification('Properties sorted!'); },300); }
+
+    // ========== Property Cards ==========
+    let properties = [];
+
+    function parseNumber(text){
+      if (!text) return 0;
+      const match = (text+'').match(/[\d,.]+/);
+      return match ? parseFloat(match[0].replace(/,/g,'')) : 0;
+    }
+    function loadProperties(){
+      const propertyCards = document.querySelectorAll('.property-card');
+      properties = [];
+
+      propertyCards.forEach((card, index) => {
+        // Hover
+        card.addEventListener('mouseenter',()=>{ card.style.transform='translateY(-10px) scale(1.02)'; });
+        card.addEventListener('mouseleave',()=>{ card.style.transform='translateY(0) scale(1)'; });
+
+        // Buttons
+        const viewBtn = card.querySelector('.btn-view');
+        viewBtn.addEventListener('click', e=>{ e.stopPropagation(); viewProperty(index); });
+        const favoriteBtn = card.querySelector('.btn-favorite');
+        updateFavoriteButton(favoriteBtn,index);
+        favoriteBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleFavorite(index,favoriteBtn); });
+
+        // Card click
+        card.addEventListener('click',()=>{ viewProperty(index); });
+
+        // Build metadata from DOM (badges/tags)
+        const typeText = card.querySelector('.property-type')?.textContent.toLowerCase() || '';
+        const typeLower = ['house','apartment','condo','townhouse'].find(t => typeText.includes(t)) || 'other';
+
+        const badges = Array.from(card.querySelectorAll('.badge'));
+        const badgeTexts = badges.map(b => b.textContent.trim().toLowerCase());
+        const listing = (badgeTexts.some(t => t.includes('for rent')) || typeText.includes('for rent')) ? 'rent' : 'sale';
+        const isVerified = !!card.querySelector('.badge.verified')
+                          ? true
+                          : (!!card.querySelector('.badge.unverified') ? false : false);
+        const featured = !!card.querySelector('.badge.featured');
+        const isNew = badgeTexts.includes('new');
+
+        const fvals = card.querySelectorAll('.property-features .feature .feature-value');
+        const beds = parseFloat(fvals[0]?.textContent.replace(/,/g,'') || '0') || 0;
+        const baths = parseFloat(fvals[1]?.textContent.replace(/,/g,'') || '0') || 0;
+        const sqft  = parseFloat(fvals[2]?.textContent.replace(/,/g,'') || '0') || 0;
+
+        const priceText = card.querySelector('.property-price')?.textContent || '';
+        const price = parseNumber(priceText);
+
+        properties[index] = {
+          element: card,
+          typeLower,
+          listing,
+          verified: isVerified,
+          featured,
+          isNew,
+          beds,
+          baths,
+          sqft,
+          price
+        };
+      });
+
+      addBadgeClickHandlers();
+      // initial render with current filters
+      updateFavoriteButtonsOnLoad();
+      filterProperties();
+    }
+    function updateFavoriteButtonsOnLoad(){
+      document.querySelectorAll('.property-card .btn-favorite').forEach((btn, idx) => updateFavoriteButton(btn, idx));
+    }
+    function addBadgeClickHandlers(){
+      document.querySelectorAll('.badge').forEach(badge => {
+        badge.addEventListener('click', (e) => {
+          const txt = badge.textContent.trim().toLowerCase();
+          if (badge.classList.contains('for-sale') || txt.includes('for sale')) document.getElementById('listing-sale').checked = true;
+          if (badge.classList.contains('for-rent') || txt.includes('for rent')) document.getElementById('listing-rent').checked = true;
+          if (badge.classList.contains('verified')  || txt.includes('verified'))  document.getElementById('verify-verified').checked = true;
+          if (badge.classList.contains('unverified')|| txt.includes('unverified') || txt.includes('⚠')) document.getElementById('verify-unverified').checked = true;
+          if (badge.classList.contains('featured')  || txt === 'featured') document.getElementById('featured-only').checked = true;
+          if (txt === 'new') document.getElementById('new-only').checked = true;
+          updateFilterCount();
+          filterProperties();
+          e.stopPropagation();
+        });
+      });
+    }
+    function viewProperty(index){ const property = properties[index]; window.location.href = 'property.html'; }
+    // ========== Favorites ==========
+    function loadFavorites(){ const saved=localStorage.getItem('favorites'); if(saved){ favorites=JSON.parse(saved); }}
+    function saveFavorites(){ localStorage.setItem('favorites', JSON.stringify(favorites)); }
+    function toggleFavorite(index,button){ if(!isLoggedIn){ alert('Please login to save favorites!'); window.location.href='login.html'; return; } const favIndex=favorites.indexOf(index); if(favIndex>-1){ favorites.splice(favIndex,1); button.textContent='♡'; button.style.color='#000'; showNotification('Removed from favorites'); } else { favorites.push(index); button.textContent='♥'; button.style.color='#666'; showNotification('Added to favorites!'); } saveFavorites(); }
+    function updateFavoriteButton(button,index){ if(favorites.includes(index)){ button.textContent='♥'; button.style.color='#666'; } else { button.textContent='♡'; button.style.color='#000'; } }
+
+    // ========== Pagination ==========
+    const paginationButtons=document.querySelectorAll('.pagination button'); paginationButtons.forEach(btn=>{ btn.addEventListener('click',()=>{ paginationButtons.forEach(b=>b.classList.remove('active')); if(btn.textContent==='←'){ navigatePage('prev'); } else if(btn.textContent==='→'){ navigatePage('next'); } else { btn.classList.add('active'); navigatePage(btn.textContent); } window.scrollTo({ top:0, behavior:'smooth' }); }); });
+    function navigatePage(page){ showNotification(`Loading page ${page}...`); const cards=document.querySelectorAll('.property-card'); cards.forEach((card,index)=>{ setTimeout(()=>{ card.style.animation='none'; setTimeout(()=>{ card.style.animation='fadeIn 0.5s'; },10); }, index*50); }); }
+
+    // ========== Notifications ==========
+    function showNotification(message){ const existing=document.querySelector('.notification'); if(existing) existing.remove(); const n=document.createElement('div'); n.className='notification'; n.textContent=message; n.style.cssText=`position:fixed; top:80px; right:20px; background:#000; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:1000; animation:slideInRight 0.3s ease-out; font-size:14px; font-weight:500;`; document.body.appendChild(n); setTimeout(()=>{ n.style.animation='slideOutRight 0.3s ease-out'; setTimeout(()=>n.remove(),300); },3000); }
+
+    // Footer links
+    document.querySelectorAll('footer a').forEach(link=>{ link.addEventListener('click',e=>{ e.preventDefault(); showNotification(`Navigating to: ${link.textContent}`); }); });
+
+    // Welcome message demo
+    if(isLoggedIn && sessionStorage.getItem('showWelcome') !== 'false'){ setTimeout(()=>{ showNotification(`Welcome back, ${currentUser.name}! 🏠`); sessionStorage.setItem('showWelcome','false'); },500); }
+
+    // Dynamic results demo
+    setInterval(()=>{ const resultsCount=document.querySelector('.results-count'); const match=resultsCount.textContent.match(/\d+/g); if(!match) return; const currentCount=parseInt(match[2]); if(Math.random()>0.95){ const newCount=currentCount+1; resultsCount.textContent = `Showing 1-12 of ${newCount} results`; showNotification('New property listed!'); } },10000);
+  </script>
+</body>
+</html>

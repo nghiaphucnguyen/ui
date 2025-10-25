@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Family Home - Property Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background-color: #000;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .logo:hover {
+            color: #666;
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #666;
+        }
+
+        .back-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background-color: white;
+            color: #000;
+        }
+
+        /* Image Gallery */
+        .gallery-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #999;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .main-image:hover {
+            transform: scale(1.01);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .overlay-btn {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .overlay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .thumbnail {
+            height: 150px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            background-size: cover;
+            background-position: center;
+            color: transparent;
+            overflow: hidden;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+            border-color: #000;
+        }
+
+        .thumbnail.active {
+            border-color: #000;
+        }
+
+        /* Main Content */
+        .content-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+
+        /* Property Details */
+        .property-details {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .property-header {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .property-type {
+            color: #000;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .property-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .property-address {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .property-price {
+            font-size: 42px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .price-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Key Features */
+        .key-features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-box:hover {
+            background: #000;
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .feature-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .feature-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* Description */
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .description {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 40px;
+        }
+
+        /* Amenities */
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .amenity-item:hover {
+            background: #000;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .amenity-icon {
+            font-size: 20px;
+        }
+
+        /* Location */
+        .map-container {
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .map-container:hover {
+            transform: scale(1.02);
+        }
+
+        .map-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .map-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Nearby Places */
+        .nearby-places {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .nearby-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .nearby-distance {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .nearby-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 100px;
+        }
+
+        .agent-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .agent-avatar {
+            width: 80px;
+            height: 80px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 15px;
+        }
+
+        .agent-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .agent-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .agent-rating {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #000;
+            color: white;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-icon {
+            padding: 12px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-icon:hover {
+            background: #000;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Similar Properties */
+        .similar-properties {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .similar-card {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .similar-card:hover {
+            background: #000;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .similar-card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .similar-card-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .similar-card:hover .similar-card-price {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-container {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-card {
+                position: relative;
+                top: 0;
+            }
+
+            .key-features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nearby-places {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .property-title {
+                font-size: 28px;
+            }
+
+            .property-price {
+                font-size: 32px;
+            }
+
+            .key-features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .amenities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nearby-places {
+                grid-template-columns: 1fr;
+            }
+
+            .main-image {
+                height: 400px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .property-details,
+        .contact-card,
+        .similar-properties {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo" onclick="window.location.href='index.html'">🏠 RealEstate</div>
+            <nav>
+                <a href="index.html">Back to Listings</a>
+            </nav>
+            <a href="index.html" class="back-btn">← Back</a>
+        </div>
+    </header>
+
+    <!-- Image Gallery -->
+    <div class="gallery-container">
+        <div class="main-image" id="mainImage">
+            <img src="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Main Property View" id="mainImageSrc">
+            <div class="image-overlay">
+                <button class="overlay-btn" id="shareBtn">📤 Share</button>
+                <button class="overlay-btn" id="favoriteBtn">♡ Save</button>
+            </div>
+        </div>
+        <div class="thumbnail-grid">
+            <div class="thumbnail active" data-image="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500">
+                <img src="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Property Image 1">
+            </div>
+            <div class="thumbnail" data-image="https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500">
+                <img src="https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Property Image 2">
+            </div>
+            <div class="thumbnail" data-image="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500">
+                <img src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Property Image 3">
+            </div>
+            <div class="thumbnail" data-image="https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500">
+                <img src="https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Property Image 4">
+            </div>
+            <div class="thumbnail" data-image="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500">
+                <img src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Property Image 5">
+            </div>
+            <div class="thumbnail" data-image="https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500">
+                <img src="https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Property Image 6">
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Property Details -->
+        <div class="property-details">
+            <div class="property-header">
+                <div class="property-type">🏠 House for Sale</div>
+                <h1 class="property-title">Modern Family Home</h1>
+                <p class="property-address">📍 123 Maple Street, Downtown, CA 90210</p>
+                <div class="property-price">$450,000</div>
+                <div class="price-info">$187 per sq ft</div>
+            </div>
+
+            <!-- Key Features -->
+            <div class="key-features">
+                <div class="feature-box">
+                    <div class="feature-icon">🛏️</div>
+                    <div class="feature-value">4</div>
+                    <div class="feature-label">Bedrooms</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🛁</div>
+                    <div class="feature-value">2.5</div>
+                    <div class="feature-label">Bathrooms</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">📐</div>
+                    <div class="feature-value">2,400</div>
+                    <div class="feature-label">Sq Ft</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🏗️</div>
+                    <div class="feature-value">2018</div>
+                    <div class="feature-label">Year Built</div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <h2 class="section-title">About This Property</h2>
+            <div class="description">
+                <p>Welcome to this stunning modern family home located in the heart of Downtown. This beautifully maintained property offers the perfect blend of comfort, style, and convenience.</p>
+                <br>
+                <p>The spacious open-concept layout features a gourmet kitchen with high-end stainless steel appliances, granite countertops, and a large island perfect for entertaining. The bright and airy living room opens to a private backyard oasis with a covered patio and mature landscaping.</p>
+                <br>
+                <p>The master suite includes a walk-in closet and luxurious en-suite bathroom with dual vanities and a spa-like shower. Three additional bedrooms provide plenty of space for family and guests.</p>
+                <br>
+                <p>Located in a highly sought-after neighborhood with top-rated schools, parks, and shopping nearby. This home won't last long!</p>
+            </div>
+
+            <!-- Amenities -->
+            <h2 class="section-title">Property Features & Amenities</h2>
+            <div class="amenities-grid">
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Central Air Conditioning</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Hardwood Floors</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>2-Car Garage</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Smart Home System</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Updated Kitchen</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Fenced Backyard</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Energy Efficient</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Security System</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Walk-in Closets</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Granite Countertops</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>Laundry Room</span>
+                </div>
+                <div class="amenity-item">
+                    <span class="amenity-icon">✓</span>
+                    <span>High-Speed Internet</span>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <h2 class="section-title">Location & Planning Map</h2>
+            <div class="map-container" id="mapContainer">
+                <img src="https://i.ibb.co/R4kHf8Yd/Screenshot-2025-10-25-154855.png" alt="Planning Map - Property Location" />
+                <div class="map-overlay">📍 123 Maple Street, Downtown - Click to view full interactive map</div>
+            </div>
+
+            <!-- Nearby Places -->
+            <h2 class="section-title">What's Nearby</h2>
+            <div class="nearby-places">
+                <div class="nearby-item">
+                    <div class="nearby-distance">0.3 mi</div>
+                    <div class="nearby-label">🏫 Elementary School</div>
+                </div>
+                <div class="nearby-item">
+                    <div class="nearby-distance">0.5 mi</div>
+                    <div class="nearby-label">🛒 Shopping Center</div>
+                </div>
+                <div class="nearby-item">
+                    <div class="nearby-distance">0.7 mi</div>
+                    <div class="nearby-label">🌳 Central Park</div>
+                </div>
+                <div class="nearby-item">
+                    <div class="nearby-distance">1.2 mi</div>
+                    <div class="nearby-label">🏥 Medical Center</div>
+                </div>
+                <div class="nearby-item">
+                    <div class="nearby-distance">2.0 mi</div>
+                    <div class="nearby-label">🚉 Metro Station</div>
+                </div>
+                <div class="nearby-item">
+                    <div class="nearby-distance">3.5 mi</div>
+                    <div class="nearby-label">🏢 Downtown</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Contact Card -->
+            <div class="contact-card">
+                <div class="agent-info">
+                    <div class="agent-avatar" onclick="window.location.href='profile.html?user=johnsmith@email.com'" style="cursor: pointer;">👨‍💼</div>
+                    <div class="agent-name" onclick="window.location.href='profile.html?user=johnsmith@email.com'" style="cursor: pointer; transition: color 0.3s;">John Smith</div>
+                    <div class="agent-title">Senior Real Estate Agent</div>
+                    <div class="agent-rating" onclick="window.location.href='profile.html?user=johnsmith@email.com'" style="cursor: pointer;">⭐⭐⭐⭐⭐ (4.9/5) • Click to view profile</div>
+                </div>
+
+                <form class="contact-form" id="contactForm">
+                    <input type="text" id="name" placeholder="Your Name" required>
+                    <input type="email" id="email" placeholder="Your Email" required>
+                    <input type="tel" id="phone" placeholder="Your Phone" required>
+                    <textarea id="message" placeholder="I'm interested in this property..."></textarea>
+                    <button type="submit" class="btn-primary">📧 Send Message</button>
+                    <button type="button" class="btn-secondary" id="callBtn">📞 Call Now</button>
+                </form>
+
+                <div class="action-buttons">
+                    <button class="btn-icon" id="scheduleBtn">📅 Schedule Tour</button>
+                    <button class="btn-icon" id="videoBtn">🎥 Video Tour</button>
+                </div>
+            </div>
+
+            <!-- Similar Properties -->
+            <div class="similar-properties">
+                <h3 class="section-title" style="font-size: 18px;">Similar Properties</h3>
+                <div class="similar-card">
+                    <div class="similar-card-title">Luxury Townhouse</div>
+                    <div>3 beds • 2.5 baths • 2,100 sqft</div>
+                    <div class="similar-card-price">$425,000</div>
+                </div>
+                <div class="similar-card">
+                    <div class="similar-card-title">Contemporary Home</div>
+                    <div>4 beds • 3 baths • 2,600 sqft</div>
+                    <div class="similar-card-price">$495,000</div>
+                </div>
+                <div class="similar-card">
+                    <div class="similar-card-title">Family Residence</div>
+                    <div>4 beds • 2 baths • 2,300 sqft</div>
+                    <div class="similar-card-price">$440,000</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // ========== Image Gallery ==========
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.getElementById('mainImage');
+        const mainImageSrc = document.getElementById('mainImageSrc');
+
+        thumbnails.forEach((thumb, index) => {
+            thumb.addEventListener('click', () => {
+                // Remove active class from all
+                thumbnails.forEach(t => t.classList.remove('active'));
+                // Add active to clicked
+                thumb.classList.add('active');
+                // Update main image
+                const newImageUrl = thumb.getAttribute('data-image');
+                mainImageSrc.style.opacity = '0';
+                setTimeout(() => {
+                    mainImageSrc.src = newImageUrl;
+                    mainImageSrc.style.opacity = '1';
+                    mainImageSrc.style.transition = 'opacity 0.3s';
+                }, 150);
+                showNotification(`Viewing image ${index + 1}`);
+            });
+        });
+
+        // Main image click - fullscreen
+        mainImage.addEventListener('click', () => {
+            alert('360° Virtual Tour would open here in fullscreen mode');
+        });
+
+        // ========== Favorite Button ==========
+        const favoriteBtn = document.getElementById('favoriteBtn');
+        let isFavorite = false;
+
+        favoriteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isFavorite = !isFavorite;
+            
+            if (isFavorite) {
+                favoriteBtn.innerHTML = '♥ Saved';
+                favoriteBtn.style.background = '#666';
+                favoriteBtn.style.color = 'white';
+                showNotification('Added to favorites!');
+            } else {
+                favoriteBtn.innerHTML = '♡ Save';
+                favoriteBtn.style.background = 'rgba(255,255,255,0.95)';
+                favoriteBtn.style.color = '#333';
+                showNotification('Removed from favorites');
+            }
+        });
+
+        // ========== Share Button ==========
+        const shareBtn = document.getElementById('shareBtn');
+        shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Modern Family Home',
+                    text: 'Check out this amazing property!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback
+                const url = window.location.href;
+                navigator.clipboard.writeText(url);
+                showNotification('Link copied to clipboard!');
+            }
+        });
+
+        // ========== Contact Form ==========
+        const contactForm = document.getElementById('contactForm');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+
+            // Show loading
+            const submitBtn = contactForm.querySelector('.btn-primary');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            // Simulate sending
+            setTimeout(() => {
+                showNotification('Message sent successfully! Agent will contact you soon.');
+                contactForm.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1500);
+        });
+
+        // ========== Action Buttons ==========
+        document.getElementById('callBtn').addEventListener('click', () => {
+            window.location.href = 'tel:+1234567890';
+            showNotification('Calling agent...');
+        });
+
+        document.getElementById('scheduleBtn').addEventListener('click', () => {
+            const date = prompt('When would you like to schedule a tour?\n(e.g., Tomorrow 2pm, Friday 10am)');
+            if (date) {
+                showNotification(`Tour scheduled for ${date}! You'll receive a confirmation email.`);
+            }
+        });
+
+        document.getElementById('videoBtn').addEventListener('click', () => {
+            alert('Loading video tour...\n\n[Virtual tour video would play here]');
+        });
+
+        // ========== Map Interaction ==========
+        const mapContainer = document.getElementById('mapContainer');
+        mapContainer.addEventListener('click', () => {
+            // Open map image in new tab
+            window.open('https://i.ibb.co/R4kHf8Yd/Screenshot-2025-10-25-154855.png', '_blank');
+            showNotification('Opening full planning map...');
+        });
+
+        // ========== Similar Properties ==========
+        const similarCards = document.querySelectorAll('.similar-card');
+        similarCards.forEach((card, index) => {
+            card.addEventListener('click', () => {
+                showNotification('Loading similar property...');
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 500);
+            });
+        });
+
+        // ========== Feature Boxes Animation ==========
+        const featureBoxes = document.querySelectorAll('.feature-box');
+        featureBoxes.forEach((box, index) => {
+            box.style.animation = `fadeIn 0.5s ease-out ${index * 0.1}s backwards`;
+        });
+
+        // ========== Amenities Animation ==========
+        const amenities = document.querySelectorAll('.amenity-item');
+        amenities.forEach((item, index) => {
+            item.style.animation = `fadeIn 0.5s ease-out ${index * 0.05}s backwards`;
+        });
+
+        // ========== Notification System ==========
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #000;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideInRight 0.3s ease-out;
+                font-size: 14px;
+                font-weight: 500;
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ========== Animations ==========
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ========== Scroll Progress Bar ==========
+        window.addEventListener('scroll', () => {
+            const scrollProgress = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.body.style.background = `linear-gradient(to right, #000 ${scrollProgress}%, #f5f5f5 ${scrollProgress}%)`;
+            document.body.style.backgroundSize = '100% 4px';
+            document.body.style.backgroundRepeat = 'no-repeat';
+            document.body.style.backgroundPosition = 'top';
+        });
+
+        // ========== Welcome Message ==========
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showNotification('🏠 Welcome! Schedule a tour today!');
+            }, 1000);
+        });
+
+        // ========== Agent Name Hover Effect ==========
+        const agentName = document.querySelector('.agent-name');
+        if (agentName) {
+            agentName.addEventListener('mouseenter', function() {
+                this.style.color = '#666';
+            });
+            agentName.addEventListener('mouseleave', function() {
+                this.style.color = '#000';
+            });
+        }
+    </script>
+</body>
+</html>
